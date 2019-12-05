@@ -1,0 +1,29 @@
+{
+  "name": "ntlrtc",
+  "version": "0.0.2",
+  "description": "realtime_chat_service",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/tuis-nettech/NTLRTC.git"
+  },
+  "keywords": [
+    "node.js",
+    "socket.io"
+  ],
+  "author": "salschoka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tuis-nettech/NTLRTC/issues"
+  },
+  "homepage": "https://github.com/tuis-nettech/NTLRTC#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.7",
+    "express": "^4.17.1",
+    "mysql2": "^2.0.1",
+    "socket.io": "^2.3.0"
+  }
+}
