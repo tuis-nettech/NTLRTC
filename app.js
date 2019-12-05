@@ -1,84 +1,131 @@
-var express = require("express");
-var app = require("express")();
-var http = require("http").createServer(app);
-var io = require("socket.io")(http);
-var mysql = require('mysql');
+//const express = require('express');
+//const app = require('express')();
+const http = require('http'); //.createServer(app);
+const socketio = require('socket.io')(http);
+const mysql = require('mysql2');
+const bcrypt = require('bcrypt');
+var fs = require('fs');
+var path = require('path');
+var mime = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'application/javascript',
+  '.jpg': 'image/jpg',
+};
 
 var con = mysql.createConnection({
-  host: "172.22.1.67",
-  user: "root",
-  password: "1234",
+  host: '172.22.1.67',
+  user: 'root',
+  password: '1234',
   database: 'node_clients',
   port: 32768
 });
 
 con.connect(function(err) {
   if (err) throw err;
-  console.log("DB Connected!");
+  console.log('DB Connected!');
 });
+
+var query = con.query('DELETE FROM user;',
+  (error, results) => {
+    if (error) throw error;
+    console.log('DB Refreshed.');
+  });
 
 var PORT = process.env.PORT || 7000;
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+/*app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
 });
 
-var users = [];
+http.listen(PORT, () => {
+  console.log('listening on port:' + PORT);
+});*/
+
+
+var http_server = new http.createServer((req, res) => {
+  if (req.url == '/') {
+    filePath = '/index.html';
+    console.log('req /index.html');
+  } else {
+    filePath = req.url;
+    console.log('req ' + req.url);
+  }
+  //ここで絶対PATHの取得
+  var fullPath = __dirname + filePath;
+  console.log(__dirname + filePath);
+  res.writeHead(200, {
+    'Content-Type': mime[path.extname(fullPath)] || 'text/plain'
+  });
+
+  fs.readFile(fullPath, (err, data) => {
+    if (err) {
+      //エラー時の応答
+    } else {
+      res.end(data, 'UTF-8');
+    }
+  });
+}).listen(PORT);
+
+
+var names = [];
+var records = [names];
+
 var body, text, user;
 
+var io = socketio.listen(http_server);
 
-io.sockets.on("connection", (socket) => {
-  //socket.username = username;
-  console.log("Client " + socket.id + " connected.");
+io.sockets.on('connection', (socket) => {
+  console.log('connected  :' + socket.id);
   senduserlist();
 
-  socket.on("Client_Send_Username", (data) => {
-    if (socket.id) {
-      if (users.indexOf(socket.id) > -1) {
-        //socket.emit("svr_msg", "'" + socket.id + "' is taken! Try some other username.");
-        socket.emit("svr_msg", "'" + socket.id + "' You already joined this room.");
+  socket.on('Client_Send_Username', (data) => {
+    if (data) {
+      if (names.indexOf(data) > -1) {
+        socket.emit('svr_msg', data + ' is taken! Try some other username.');
+        //socket.emit('svr_msg',  data + ', You already joined this room.');
       } else {
-        //let newuser = [data,socket.id];
-        users.push(socket.id);
 
-        var query = con.query(
-          "INSERT INTO user set socketid = ?, username = ?", [socket.id, socket.id],
+        //let newuser = [data,socket.id];
+        records.push([socket.id, data]);
+        console.log('amountofuser=' + names.length);
+
+        var query = con.query('REPLACE INTO user (num, socketid, name) VALUES(?, ?, ?) ', [names.length, socket.id, data],
           (error, results) => {
             if (error) throw error;
-            console.log("1 record inserted");
-        });
-        socket.emit("Joined", {
+            console.log('1 record inserted');
+          });
+        socket.emit('Joined', {
           username: data
         });
         senduserlist();
-        console.log("Joined : " + socket.id);
+        console.log('Joined : ' + socket.id);
       }
 
     } else {
-      socket.emit("svr_msg", "Empty username is NOT allowed!");
+      socket.emit('svr_msg', 'Empty username is NOT allowed!');
     }
   });
 
-  socket.on("disconnect", () => {
-    console.log("disconnect : " + socket.id);
-    const disconnectUserPos = users.findIndex(users => users === socket.id);
-    users.splice(disconnectUserPos);
+  socket.on('disconnect', () => {
+    console.log('disconnect :' + socket.id);
+    const disconnectUserPos = names.findIndex(names => names === socket.id);
+    names.splice(disconnectUserPos);
     senduserlist();
   });
 
-  socket.on("message", (message) => {
-    io.sockets.emit("newmsg", {
+  socket.on('message', (message) => {
+    var msg = message.body;
+    var cleanmsg;
+    io.sockets.emit('newmsg', {
       user: socket.id,
-      body: message.body
+      body: msg
     });
-    console.log(socket.id + ": " + message.body);
+    console.log('said :' + socket.id + ': ' + message.body);
   });
 });
 senduserlist = () => {
-  io.emit("userlist", (users));
-  console.log(users);
-  console.log("listsent");
-}
-http.listen(PORT, () => {
-  console.log("listening on port:" + PORT);
-});
+  io.emit('userlist', (names));
+  console.log(names[1]);
+  console.log('listsent');
+};

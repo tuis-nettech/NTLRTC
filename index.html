@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8"/>
+  <title>socket.io chat</title>
+  <style>
+    #message_for {
+      overflow: hidden;
+      background-color: #DDD;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    #svr-messages {
+      color: red;
+    }
+  </style>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</head>
+
+<body>
+  <h1>Socket.io WebChat Service</h1>
+  <h2>Enter your name and let's get started!</h2>
+  <div id="svr-messages"></div>
+  <div id="userlist"></div>
+  <form id="form" action="#">
+    <input id="username" autocomplete="on" placeholder="Your name!" />
+    <button id="regsubmit">Regist!</button>
+  </form>
+  <ul id="messages"></ul>
+  <form id="message_form" action="##">
+    <input id="input" autocomplete="off" placeholder="Message!">
+    <button>Send!</button>
+  </form>
+
+  <!img src="https://pbs.twimg.com/media/EJRHf11U8AEwa01?format=jpg&name=orig" alt="picture">
+  <img src="./test.jpg" alt="picture2" width="100%" height="auto">
+</body>
+
+<script src="/Client.js"></script>
+
+</html>
