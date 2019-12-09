@@ -23,7 +23,6 @@ socket.on('userExists', function(data) {
 
 $('#message_form').submit(function() {
   //socket.emit('message', $('#input').val());
-
   var text = $('#input').val();
   if (text) {
     socket.emit('message', {

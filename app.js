@@ -57,51 +57,64 @@ var http_server = new http.createServer((req, res) => {
   res.writeHead(200, {
     'Content-Type': mime[path.extname(fullPath)] || 'text/plain'
   });
+  console.log();
 
   fs.readFile(fullPath, (err, data) => {
     if (err) {
       //エラー時の応答
+      console.log("Read err : "+ err);
     } else {
       res.end(data, 'UTF-8');
     }
   });
 }).listen(PORT);
 
-
 var names = [];
-var records = [names];
+var ids = [];
 
 var body, text, user;
 
 var io = socketio.listen(http_server);
 
+senduserlist = () => {
+  io.emit('userlist', (names));
+  console.log(names);
+  console.log(ids);
+  console.log('listsent');
+};
+
 io.sockets.on('connection', (socket) => {
   console.log('connected  :' + socket.id);
   senduserlist();
+  io.emit('svr_msg', '');
 
   socket.on('Client_Send_Username', (data) => {
     if (data) {
-      if (names.indexOf(data) > -1) {
-        socket.emit('svr_msg', data + ' is taken! Try some other username.');
-        //socket.emit('svr_msg',  data + ', You already joined this room.');
+      if (ids.indexOf(socket.id) > -1) {
+        socket.emit('svr_msg', 'You seems had already submitted your name!');
       } else {
-
-        //let newuser = [data,socket.id];
-        records.push([socket.id, data]);
-        console.log('amountofuser=' + names.length);
-
-        var query = con.query('REPLACE INTO user (num, socketid, name) VALUES(?, ?, ?) ', [names.length, socket.id, data],
-          (error, results) => {
-            if (error) throw error;
-            console.log('1 record inserted');
+        if (names.indexOf(data) > -1) {
+          socket.emit('svr_msg', data + ' is taken! Try some other username.');
+            //socket.emit('svr_msg',  data + ', You already joined this room.');
+          } else {
+          //let newuser = [data,socket.id];
+          names.push(data);
+          ids.push(socket.id);
+          console.log('amountofuser=' + names.length);
+          console.log('names=' + names);
+          //console.log('records='+records);
+          var query = con.query('REPLACE INTO user (num, socketid, name) VALUES(?, ?, ?) ', [names.length, socket.id, data],
+            (error, results) => {
+              if (error) throw error;
+              console.log('1 record inserted');
+            });
+          socket.emit('Joined', {
+            username: data
           });
-        socket.emit('Joined', {
-          username: data
-        });
-        senduserlist();
-        console.log('Joined : ' + socket.id);
+          senduserlist();
+          console.log('Joined : ' + socket.id);
+        }
       }
-
     } else {
       socket.emit('svr_msg', 'Empty username is NOT allowed!');
     }
@@ -111,21 +124,21 @@ io.sockets.on('connection', (socket) => {
     console.log('disconnect :' + socket.id);
     const disconnectUserPos = names.findIndex(names => names === socket.id);
     names.splice(disconnectUserPos);
+    ids.splice(disconnectUserPos);
     senduserlist();
   });
 
   socket.on('message', (message) => {
+
     var msg = message.body;
-    var cleanmsg;
+    var name = names[ids.indexOf(socket.id)];
+    if (name == undefined){
+      name = 'dorothy';
+    }
     io.sockets.emit('newmsg', {
-      user: socket.id,
+      user: name,
       body: msg
     });
-    console.log('said :' + socket.id + ': ' + message.body);
+    console.log('said :' + message.user + ': ' + message.body);
   });
 });
-senduserlist = () => {
-  io.emit('userlist', (names));
-  console.log(names[1]);
-  console.log('listsent');
-};
