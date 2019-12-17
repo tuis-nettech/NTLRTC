@@ -1,9 +1,5 @@
 var socket = io();
 console.log('loaded');
-$('#form').submit(function() {
-  socket.emit('Client_Send_Username', $('#username').val());
-  console.log('Name is '+$('#username').val());
-});
 
 socket.on('svr_msg', function(data) {
   document.getElementById('svr-messages').innerHTML = data;
@@ -13,8 +9,8 @@ socket.on('userlist', function(data) {
   document.getElementById('userlist').innerHTML = data;
 });
 
-socket.on('Joined', function(data) {
-
+socket.on('login_success', function(data) {
+  document.getElementById('form').innerHTML = data;//"<input id="input" autocomplete="off" placeholder="Message!">";
 });
 
 socket.on('userExists', function(data) {

@@ -23,6 +23,9 @@
   "dependencies": {
     "bcrypt": "^3.0.7",
     "express": "^4.17.1",
+    "express-generator": "^4.16.1",
+    "express-session": "^1.17.0",
+    "morgan": "^1.9.1",
     "mysql2": "^2.0.1",
     "socket.io": "^2.3.0"
   }

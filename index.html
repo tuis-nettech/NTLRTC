@@ -4,11 +4,10 @@
 <head>
   <meta charset="utf-8"/>
   <link rel="stylesheet" href="style.css">
-  <title>socket.io chat</title>
+  <title>Socket IO Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" >
   <script src="/socket.io/socket.io.js"></script>
   <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
-
 </head>
 
 <body>
@@ -16,20 +15,16 @@
     <h1>Node.JS+Socket.IO WebChat Service</h1>
   </div>
   <div class="bg"></div>
-  <h2>Enter your name and let's get started!</h2>
+
   <div id="svr-messages"></div>
   <div id="userlist"></div>
-  <form id="form" action="#">
-    <input id="username" autocomplete="on" placeholder="Your name!" />
-    <button id="regsubmit">Regist!</button>
-  </form>
+
+  <p>New to NTLRTC? <a href="./login.html">Sign up now!</a></p>
   <form id="message_form" action="##">
     <input id="input" autocomplete="off" placeholder="Message!">
     <button>Send!</button>
   </form>
   <ul id="messages"></ul>
-  <!img src="https://pbs.twimg.com/media/EJRHf11U8AEwa01?format=jpg&name=orig" alt="picture">
-  <!img src="./test.jpg" alt="picture2">
 </body>
 
 <script src="/Client.js"></script>

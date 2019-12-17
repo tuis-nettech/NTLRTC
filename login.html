@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="style.css">
+  <title>Regist - IO Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <script src="/socket.io/socket.io.js"></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.js></script>
+  <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Node.JS+Socket.IO WebChat Service</h1>
+  </div>
+  <div id="svr-messages"></div>
+  <h2>Enter your name and let's get started!</h2>
+  <p>Your Passkey will Hashed by SHA-512 before sending.<p>
+  <form id="regform" action="#">
+    <input id="username" autocomplete="on" placeholder="Your name!" /><br>
+    <input id="passkey" type="password" placeholder="Pass key!" />
+    <button id="regsubmit">Regist</button>
+  </form>
+
+  <script src="/login.js"></script>
+</body>
+</html>
