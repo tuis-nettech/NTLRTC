@@ -1,9 +1,11 @@
 //const express = require('express');
-//const app = require('express')();
-const http = require('http'); //.createServer(app);
+//const app     = require('express')();
+const config   = require('config');
+const http     = require('http'); //.createServer(app);
 const socketio = require('socket.io')(http);
-const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
+const mysql    = require('mysql2');
+const bcrypt   = require('bcrypt');
+///////////////////////////////////////////////
 var fs = require('fs');
 var path = require('path');
 var mime = {
@@ -12,15 +14,14 @@ var mime = {
   '.js': 'application/javascript',
   '.jpg': 'image/jpg',
 };
-
+///////////////////////////////////////////////
 var con = mysql.createConnection({
-  host: '172.22.1.67',
-  user: 'root',
-  password: '1234',
-  database: 'node_clients',
-  port: 32768
+  host:     config.mysql.hostname,
+  user:     config.mysql.username,
+  password: config.mysql.password,
+  database: config.mysql.database,
+  port:     config.mysql.port
 });
-
 con.connect(function(err) {
   if (err) throw err;
   console.log('DB Connected!');
@@ -31,8 +32,8 @@ var query = con.query('DELETE FROM user;',
     if (error) throw error;
     console.log('DB Refreshed.');
   });
-
-var PORT = process.env.PORT || 7000;
+///////////////////////////////////////////////
+var PORT = process.env.PORT || config.web.port;
 
 /*app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');

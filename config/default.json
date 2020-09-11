@@ -1,0 +1,12 @@
+{
+  "web" : {
+    "port" : 51000
+  },
+  "mysql" : {
+    "hostname" : "localhost",
+    "username" : "dei",
+    "password" : "Vox_Popli_Vox_Dei",
+    "database" : "chatDB",
+    "port" : 32768
+  }
+}
